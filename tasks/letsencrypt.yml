@@ -6,10 +6,8 @@
 - name: Run docker-letsencrypt and setup sertificates
   docker:
     command: "{{letsencrypt_command}}"
+    env: "{{letsencrypt_env}}"
     image: "{{letsencrypt_image}}"
     name: letsencrypt
     ports: ["80:80", "443:443"]
     volumes: ["{{letsencrypt_home}}:/etc/letsencrypt"]
-    env:
-      LETSENCRYPT_EMAIL: "{{letsencrypt_email}}"
-      LETSENCRYPT_DOMAIN1: "{{letsencrypt_domain}}"
