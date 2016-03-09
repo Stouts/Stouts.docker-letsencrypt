@@ -1,0 +1,5 @@
+---
+
+- include: letsencrypt.yml
+  when: letsencrypt_enabled
+  tags: [docker-letsencrypt]

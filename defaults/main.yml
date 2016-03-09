@@ -1,0 +1,7 @@
+letsencrypt_enabled: yes
+
+letsencrypt_home: /opt/letsencrypt
+letsencrypt_image: blacklabelops/letsencrypt
+letsencrypt_command: install
+letsencrypt_email: "{{ansible_user|default(ansible_ssh_user)}}@{{inventory_hostname}}"
+letsencrypt_domain: "{{inventory_hostname}}"
