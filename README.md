@@ -9,15 +9,13 @@ Ansible role to install SSL certificates from Letsencrypt
 letsencrypt_enabled: yes
 
 letsencrypt_home: /opt/letsencrypt
-letsencrypt_image: blacklabelops/letsencrypt
-letsencrypt_command: install
-letsencrypt_email: "{{ansible_user|default(ansible_ssh_user)}}@{{inventory_hostname}}"
-letsencrypt_domain: "{{inventory_hostname}}"
-letsencrypt_https_enabled: 'true'             # Set 'false' to disable
-letsencrypt_http_enabled: 'true'              # Set 'false' to disable
-letsencrypt_env:
-  LETSENCRYPT_EMAIL: "{{letsencrypt_email}}"
-  LETSENCRYPT_DOMAIN1: "{{letsencrypt_domain}}"
+letsencrypt_image: quay.io/letsencrypt/letsencrypt
+letsencrypt_keep: true
+letsencrypt_email: "{{ansible_user_id}}@{{inventory_hostname}}"
+letsencrypt_domains: ["{{inventory_hostname}}"]
+letsencrypt_stop_services: [nginx, apache]
+
+letsencrypt_renew: false
 ```
 
 #### Usage

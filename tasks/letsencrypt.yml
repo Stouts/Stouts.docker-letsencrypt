@@ -3,11 +3,41 @@
 - name: Ensure that letsencrypt home is exists
   file: state=directory path="{{letsencrypt_home}}"
 
+- name: Stop services
+  service: name={{item}} state=stopped
+  ignore_errors: yes
+  with_items: "{{letsencrypt_stop_services}}"
+  register: letsencrypt_services_stopped
+
 - name: Run docker-letsencrypt and setup sertificates
   docker:
-    command: "{{letsencrypt_command}}"
-    env: "{{letsencrypt_env}}"
-    image: "{{letsencrypt_image}}"
     name: letsencrypt
-    ports: ["80:80", "443:443"]
+    image: "{{letsencrypt_image}}"
+    command: "certonly  --non-interactive --agree-tos --standalone --email {{letsencrypt_email}} -d {{letsencrypt_domains|join(',')}}"
+    detach: false
+    ports: ['80:80', '443:443']
     volumes: ["{{letsencrypt_home}}:/etc/letsencrypt"]
+
+- name: Start services
+  service: name={{item.item}} state=started
+  when: (item.state is defined and item.state == "stopped")
+  with_items: "{{letsencrypt_services_stopped.results}}"
+
+- name: Setup autorenew
+  cron:
+    cron_file: letsencrypt
+    name: letsencrypt
+    user: root
+    day: "{{letsencrypt_renew.day|default(omit)}}"
+    hour: "{{letsencrypt_renew.hour|default(omit)}}"
+    minute: "{{letsencrypt_renew.minute|default(omit)}}"
+    weekday: "{{letsencrypt_renew.weekday|default(omit)}}"
+    job: "docker run --rm -it -v {{letsencrypt_home}}:/etc/letsencrypt -p 80:80 -p 443:443 {{letsencrypt_image}} renew"
+  when: "{{letsencrypt_renew}}"
+
+- name: Disable autorenew
+  cron:
+    name: letsencrypt
+    cron_file: letsencrypt
+    state: absent
+  when: "{{not letsencrypt_renew}}"
