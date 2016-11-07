@@ -13,10 +13,11 @@
   docker:
     name: letsencrypt
     image: "{{letsencrypt_image}}"
-    command: "certonly  --non-interactive --agree-tos --standalone --email {{letsencrypt_email}} -d {{letsencrypt_domains|join(',')}}"
+    command: "certonly  --non-interactive --agree-tos --standalone --email {{letsencrypt_email}} -d {{item}}"
     detach: false
     ports: ['80:80', '443:443']
     volumes: ["{{letsencrypt_home}}:/etc/letsencrypt"]
+  with_items: "{{letsencrypt_domains}}"
 
 - name: Start services
   service: name={{item.item}} state=started

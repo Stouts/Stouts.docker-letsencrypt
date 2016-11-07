@@ -1,6 +1,6 @@
 letsencrypt_enabled: yes
 
-letsencrypt_home: /opt/letsencrypt
+letsencrypt_home: /etc/letsencrypt
 letsencrypt_image: quay.io/letsencrypt/letsencrypt
 letsencrypt_keep: true
 letsencrypt_email: "{{ansible_user_id}}@{{inventory_hostname}}"
